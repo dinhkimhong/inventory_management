@@ -15,18 +15,18 @@ class VendorController extends Controller
     	$this->middleware('auth');
     }
 
-    public function vendorIndex()
+    public function index()
     {
     	return view('vendor.index');
     }
 
-    public function vendorPage(){
+    public function create(){
     	$titles = Title::orderBy('title','ASC')->get();
     	$countries = Country::orderBy('country','ASC')->get();
     	return view('vendor.create',compact('titles','countries'));
     }
 
-    public function createVendor(Request $request)
+    public function new(Request $request)
     {
         $message = [
             'vendor_name.required'=>'Please input vendor name',
@@ -51,12 +51,12 @@ class VendorController extends Controller
         {
     		Vendor::create($request->all());
             $vendor_number = Vendor::latest('vendors.vendor_number')->value('vendor_number');
-            return response()->json(['success'=>'New vendor number '. $vendor_number. ' was created.']);
+            return back()->withSuccess('New vendor number '. $vendor_number. ' was created.');
     	}
-        return response()->json(['fail'=>$validator->errors()->all()]);
+        return back()->withInput()->withErrors($validator);
     }
 
-    public function searchVendor(Request $request)
+    public function search(Request $request)
     {
     	$term = $request->term;
     	$vendors = Vendor::where('vendor_name','LIKE','%'.$term.'%')->get();
@@ -68,16 +68,15 @@ class VendorController extends Controller
     	return response()->json($results);
     }
 
-    public function findVendorInfo(Request $request)
+    public function findInfo(Request $request)
     {
     	$vendor_number = $request->vendor_number;
     	$vendor_info= Vendor::where('vendor_number',$vendor_number)->first();
-    	return response()->json(['name'=>'kimhong']);
+    	return response()->json($vendor_info);
     }
 
-    public function viewVendor(Request $request)
+    public function view($vendor_number)
     {
-    	$vendor_number = $request->vendor_number;
     	$vendor_numbers = Vendor::pluck('vendor_number')->all();
     	if(!in_array($vendor_number, $vendor_numbers)){
     		return redirect()->route('vendorIndex')->withMessage('Vendor number '. $vendor_number.' does not exist.');
@@ -90,7 +89,7 @@ class VendorController extends Controller
 
     }
 
-    public function updateVendor(Request $request)
+    public function update(Request $request)
     {
         $message = [
             'vendor_name.required'=>'Please input vendor name',
@@ -115,12 +114,12 @@ class VendorController extends Controller
         {
         	$vendor_number = $request->vendor_number;
         	Vendor::updateOrCreate(['vendor_number'=>$vendor_number],$request->all());
-            return response()->json(['success'=>'Vendor number '. $vendor_number .' has been updated.']);
+            return back()->withSuccess('Vendor number '. $vendor_number .' has been updated.');
     	}
-        return response()->json(['fail'=>$validator->errors()->all()]);
+        return back()->withErrors($validator);
     }
 
-    public function deleteVendor(Request $request)
+    public function delete(Request $request)
     {
     	$vendor_number = $request->vendor_number;
     	Vendor::destroy($vendor_number);

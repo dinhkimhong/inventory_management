@@ -1,78 +1,9 @@
-*{
-  margin: 0;
-  padding: 0;
+.main_page{
+	min-height: 100vh;
+	background-color: blue;
+/*	background-position: center;
+	background-size: cover;
+	background-attachment: fixed;
+	background-repeat: no-repeat;
+	position: relative;*/
 }
-body{
-  font-family: 'Tenali Ramakrishna', tahoma, sans-serif;
-  color: #333;
-  background: #f7f5f0;
-  font-size: 21px;
-}
-.navbar{
-  background: #D66A9B;
-  min-height: 40px;
-  line-height: 40px;
-}
-.navbar .nav-link{
-  color: #cccccc;
-}
-.navbar .nav-link:hover{
-  color: #ffffff;
-}
-
-main{
-  background-color: #ffffff;
-}
-.navbar-toggler{
-  background-color: #ffffff;
-}
-.modal .modal-header{
-  background: #D66A9B;
-  color: #cccccc;
-}
-.modal .btn{
-  background: #D66A9B;
-  font-size: 21px;
-  color: #cccccc;
-}
-.modal .btn-primary:hover{
-  color: #ffffff;
-}
-
-.modal .modal-body input{
-  font-size: 21px;
-}
-
-table {
-  font-size: 21px;
-}
-
-form .btn {
-  font-size: 21px;
-}
-
-form .btn-save {
-  background: #D66A9B;
-  color: #cccccc;
-}
-
-form .btn-save:hover{
-  color: #ffffff;
-}
-
-form .btn-cancel:hover{
-  background-color: grey;
-  color: #ffffff;
-}
-
-a.disabled {
-    pointer-events: none;
-}
-
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 40px;
-  height: 24px;
-}
-

@@ -11,18 +11,17 @@
 |
 */
 
-use App\User;
-use App\Role;
-
 Route::get('/', function () {
-	$users = User::orderBy('id','ASC')->get();
-	$roles = Role::orderBy('description','ASC')->get();
-    return view('index',compact('users','roles'));
-})->name('home1');
+    return view('index');
+})->name('home');
+
+Route::get('/register/account', function () {
+    return view('register');
+})->name('registerPage');
 
 Auth::routes();
 
-Route::get('/dashboard', 'HomeController@index')->name('home');
+// Route::get('/dashboard', 'HomeController@dashboard')->name('dashboard');
 
 Route::get('auth/{provider}','Auth\LoginController@redirectToProvider');
 Route::get('auth/{provider}/callback','Auth\LoginController@handleProviderCallback');
@@ -34,37 +33,39 @@ Route::group(['middleware'=>['auth','CheckRole']],function(){
 
 Route::group(['middleware'=>'auth'],function(){
 
-	Route::get('material',['as'=>'materialIndex','uses'=>'MaterialController@materialIndex']);
-	Route::get('material/create',['as'=>'materialPage','uses'=>'MaterialController@materialPage']);
-	Route::post('material/createnew',['as'=>'createMaterial','uses'=>'MaterialController@createMaterial']);
-	Route::get('material/search',['as'=>'searchMaterial','uses'=>'MaterialController@searchMaterial']);
-	Route::get('material/find',['as'=>'findMaterialInfo','uses'=>'MaterialController@findMaterialInfo']);
-	Route::get('material/view',['as'=>'viewMaterial','uses'=>'MaterialController@viewMaterial']);
-	Route::post('material/update',['as'=>'updateMaterial','uses'=>'MaterialController@updateMaterial']);
-	Route::post('material/delete',['as'=>'deleteMaterial','uses'=>'MaterialController@deleteMaterial']);
+	Route::get('material',['as'=>'materialIndex','uses'=>'MaterialController@index']);
+	Route::get('material/create',['as'=>'materialPage','uses'=>'MaterialController@create']);
+	Route::post('material/new',['as'=>'createMaterial','uses'=>'MaterialController@new']);
+	Route::get('material/search',['as'=>'searchMaterial','uses'=>'MaterialController@search']);
+	Route::get('material/find',['as'=>'findMaterialInfo','uses'=>'MaterialController@findInfo']);
+	Route::get('material/view/{material_number}',['as'=>'viewMaterial','uses'=>'MaterialController@view']);
+	Route::post('material/update',['as'=>'updateMaterial','uses'=>'MaterialController@update']);
+	Route::post('material/delete',['as'=>'deleteMaterial','uses'=>'MaterialController@delete']);
+	
 	//Vendor
-	Route::get('vendor/create',['as'=>'vendorPage','uses'=>'VendorController@vendorPage']);
-	Route::post('vendor/createnew',['as'=>'createVendor','uses'=>'VendorController@createVendor']);
-	Route::get('vendor',['as'=>'vendorIndex','uses'=>'VendorController@vendorIndex']);
-	Route::get('vendor/search',['as'=>'searchVendor','uses'=>'VendorController@searchVendor']);
-	Route::get('vendor/find',['as'=>'findVendorInfo','uses'=>'VendorController@findVendorInfo']);
-	Route::get('vendor/view',['as'=>'viewVendor','uses'=>'VendorController@viewVendor']);
-	Route::post('vendor/update',['as'=>'updateVendor','uses'=>'VendorController@updateVendor']);
-	Route::post('vendor/delete',['as'=>'deleteVendor','uses'=>'VendorController@deleteVendor']);
+	Route::get('vendor/create',['as'=>'vendorPage','uses'=>'VendorController@create']);
+	Route::post('vendor/createnew',['as'=>'createVendor','uses'=>'VendorController@new']);
+	Route::get('vendor',['as'=>'vendorIndex','uses'=>'VendorController@index']);
+	Route::get('vendor/search',['as'=>'searchVendor','uses'=>'VendorController@search']);
+	Route::get('vendor/find',['as'=>'findVendorInfo','uses'=>'VendorController@findInfo']);
+	Route::get('vendor/view/{vendor_number}',['as'=>'viewVendor','uses'=>'VendorController@view']);
+	Route::post('vendor/update',['as'=>'updateVendor','uses'=>'VendorController@update']);
+	Route::post('vendor/delete',['as'=>'deleteVendor','uses'=>'VendorController@delete']);
 
 	//Purchase
-	Route::get('purchase/create',['as'=>'purchasePage','uses'=>'PurchaseController@purchasePage']);
-	Route::post('purchase/createnew',['as'=>'createPurchase','uses'=>'PurchaseController@createPurchase']);
-	Route::get('purchase',['as'=>'purchaseIndex','uses'=>'PurchaseController@purchaseIndex']);
-	Route::get('purchase/view',['as'=>'viewPurchase','uses'=>'PurchaseController@viewPurchase']);
-	Route::post('purchase/update',['as'=>'updatePurchase','uses'=>'PurchaseController@updatePurchase']);
-	Route::post('purchase/delete',['as'=>'deletePurchase','uses'=>'PurchaseController@deletePurchase']);
-	Route::get('/purchase/print/{POnumber}',['as'=>'printPurchase','uses'=>'PurchaseController@printPurchase']);
+	Route::get('purchase/create',['as'=>'purchasePage','uses'=>'PurchaseController@create']);
+	Route::post('purchase/createnew',['as'=>'createPurchase','uses'=>'PurchaseController@new']);
+	Route::get('purchase',['as'=>'purchaseIndex','uses'=>'PurchaseController@index']);
+	Route::get('purchase/view/{po_number}',['as'=>'viewPurchase','uses'=>'PurchaseController@view']);
+	Route::get('purchase/update/{po_number}',['as'=>'updatePurchasePage','uses'=>'PurchaseController@updatePage']);
+	Route::post('purchase/update',['as'=>'updatePurchase','uses'=>'PurchaseController@update']);
+	Route::post('purchase/delete',['as'=>'deletePurchase','uses'=>'PurchaseController@delete']);
+	Route::get('/purchase/print/{POnumber}',['as'=>'printPurchase','uses'=>'PurchaseController@print']);
 
 	//Inbound
-	Route::get('inbound',['as'=>'inboundIndex','uses'=>'InboundController@inboundIndex']);
-	Route::get('inbound/create',['as'=>'inboundPage','uses'=>'InboundController@inboundPage']);
-	Route::post('inbound/createnew',['as'=>'createInbound','uses'=>'InboundController@createInbound']);
+	Route::get('inbound',['as'=>'inboundIndex','uses'=>'InboundController@index']);
+	Route::get('inbound/create',['as'=>'inboundPage','uses'=>'InboundController@create']);
+	Route::post('inbound/createnew',['as'=>'createInbound','uses'=>'InboundController@new']);
 
 	//BOM
 	Route::get('semi/create',['as'=>'semiPage','uses'=>'BOMController@semiPage']);

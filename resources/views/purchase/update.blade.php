@@ -10,7 +10,7 @@
                     <h5 class="title">Purchase Order</h5>
                   </div>
                   <div class="card-body">
-                    <form>
+                    <form action="{{route('updatePurchase')}}" method="POST">
                         @csrf
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                       <li class="nav-item">
@@ -29,32 +29,32 @@
                                 <label for="po_number" class="col-form-label col-md-2">Purchase number</label>
                                 <input type="text" name="po_number" id="po_number" class="form-control col-md-2" readonly="true" value="{{ $purchase->po_number }}">
                                 <label for="currency" class="col-form-label col-md-2">Currency</label>
-                                <select name="currency" id="currency" class="form-control col-md-2 custom-select" disabled="true">
+                                <select name="currency" id="currency" class="form-control col-md-2 custom-select" @if(in_array($purchase->po_number, $po_number_array_inbound)) readonly="true" @endif>
                                     @foreach($currencies as $currency)
                                     <option value="{{ $currency->currency }}" @if($purchase->currency==$currency->currency) selected="true" @endif>{{ $currency->currency}}</option>
                                     @endforeach
                                 </select> 
                                 <label for="payment_term" class="col-form-label col-md-2">Payment Term</label>
-                                <input type="text" name="payment_term" id="payment_term" class="form-control col-md-2" value="{{ $purchase->payment_term }}" readonly="true">
+                                <input type="text" name="payment_term" id="payment_term" class="form-control col-md-2" value="{{ $purchase->payment_term }}" @if(in_array($purchase->po_number, $po_number_array_inbound)) readonly="true" @endif>
                             </div>
 
                             <div class="form-group row"> 
                                 <label for="delivery_date" class="col-form-label col-md-2">Delivery Date</label>
-                                <input type="text" name="delivery_date" id="delivery_date" class="form-control col-md-2" value="{{ $purchase->delivery_date }}" readonly="true">
+                                <input type="text" name="delivery_date" id="delivery_date" class="form-control col-md-2" value="{{ $purchase->delivery_date }}" @if(in_array($purchase->po_number, $po_number_array_inbound)) readonly="true" @endif>
                                 <label for="delivery_term" class="col-form-label col-md-2">Delivery Term</label>
-                                <select name="delivery_term" id="delivery_term" class="form-control col-md-1 custom-select" disabled="true">
+                                <select name="delivery_term" id="delivery_term" class="form-control col-md-1 custom-select" @if(in_array($purchase->po_number, $po_number_array_inbound)) readonly="true" @endif>
                                     @foreach ($delivery_terms as $delivery_term)
                                     <option value="{{ $delivery_term->delivery_term }}" @if ($purchase->delivery_term == $delivery_term->delivery_term) selected="true" @endif>{{ $delivery_term->delivery_term }}</option>
                                     @endforeach
                                  </select>
-                                <input type="text" name="delivery_place" id="delivery_place" class="form-control col-md-3" value="{{ $purchase->delivery_place }}" readonly="true">
+                                <input type="text" name="delivery_place" id="delivery_place" class="form-control col-md-3" value="{{ $purchase->delivery_place }}" @if(in_array($purchase->po_number, $po_number_array_inbound)) readonly="true" @endif>
                             </div>  
                             <div class="form-group row">
                                 <label for="vendor_number" class="col-form-label col-md-2">Vendor Number</label>
                                 <div class="col-md-2 pl-0 pr-0">
                                     <div class="input-group">
-                                        <input type="text" name="vendor_number" id="vendor_number" class="form-control" value="{{ $purchase->vendor_number }}" readonly="true" >
-                                        <div class="input-group-addon d-none">
+                                        <input type="text" name="vendor_number" id="vendor_number" class="form-control" value="{{ $purchase->vendor_number }}" @if(in_array($purchase->po_number, $po_number_array_inbound)) readonly="true" @endif >
+                                        <div class="input-group-addon @if(in_array($purchase->po_number, $po_number_array_inbound)) d-none @endif">
                                             <span class="fa fa-search" id="find_vendor"></span>
                                         </div>
                                     </div>
@@ -66,9 +66,9 @@
                                 <label for="country" class="col-form-label col-md-2">Country</label>
                                 <input type="text" name="country" id="country" class="form-control col-md-2" value="{{ $purchase->country_code }}" readonly="true">
                                 <label for="contact" class="col-form-label col-md-2">Contact person</label>
-                                <input type="text" name="contact" id="contact" class="form-control col-md-2" value="{{ $purchase->contact }}" readonly="true">
+                                <input type="text" name="contact" id="contact" class="form-control col-md-2" value="{{ $purchase->contact }}">
                                 <label for="email" class="col-form-label col-md-2">Email address</label>
-                                <input type="text" name="email" id="email" class="form-control col-md-2" value="{{ $purchase->email }}" readonly="true">
+                                <input type="text" name="email" id="email" class="form-control col-md-2" value="{{ $purchase->email }}">
                             </div>
                         </div>
                         
@@ -85,7 +85,7 @@
                             
                             <div class="form-group row">    
                                 <label for="total_freight_handling_cost" class="col-form-label col-md-3">Freight + Handling Cost</label>
-                                <input type="text" name="total_freight_handling_cost" id="total_freight_handling_cost" class="form-control col-md-3" value="{{ $purchase->total_freight_handling_cost }}" readonly="true">
+                                <input type="text" name="total_freight_handling_cost" id="total_freight_handling_cost" class="form-control col-md-3" value="{{ $purchase->total_freight_handling_cost }}" >
                             </div>
 
                             <div class="form-group row">
@@ -97,7 +97,7 @@
                         <div class="tab-pane fade p-3" id="shipping" role="tabpanel" aria-labelledby="shipping-tab">
                             <div class="form-group">
                                 <label for="shipping_instruction"><u>Shipping Instruction:</u></label>
-                                <textarea name="shipping_instruction" class="form-control" id="shipping_instruction" rows="7" readonly="true">{{$purchase->shipping_instruction }}</textarea>
+                                <textarea name="shipping_instruction" class="form-control" id="shipping_instruction" rows="7" >{{$purchase->shipping_instruction }}</textarea>
                             </div>
                         </div>
                       
@@ -119,6 +119,7 @@
                                         <th scope="col">Amount</th>
                                         <th scope="col">Import</th>
                                         <th scope="col">Freight + Handling</th>
+                                        <th scope="col"><a href="#" class="addRow">Add</a></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -126,21 +127,24 @@
                                     <tr>
                                         <td>
                                             <div class="input-group">
-                                                <input type="text" name="material_number[]" class="form-control material_number" value="{{ $p->material_number }}" readonly="true">
+                                                <input type="text" name="material_number[]" class="form-control material_number" value="{{ $p->material_number }}" @if(in_array($p->number, $pod_number_array_inbound_detail)) readonly="true" @endif>
                                                 <input type="text" name="number[]" class="form-control number" value="{{ $p->number }}" readonly="true"  hidden="true">                                                
-                                                <div class="input-group-addon d-none">
+                                                <div class="input-group-addon @if(in_array($p->number, $pod_number_array_inbound_detail)) d-none @endif">
                                                     <span class="fa fa-search find_material"></span>
                                                 </div>
                                             </div>
                                         </td>
                                         <td><input type="text" name="material_description[]" class="form-control material_description" readonly="true" value="{{ $p->material_description }}"></td>
                                         <td><input type="text" name="unit[]" class="form-control unit" readonly="true" value="{{ $p->unit }}"></td>
-                                        <td><input type="text" name="quantity[]" class="form-control quantity" value="{{ $p->quantity }}" readonly="true">
+                                        <td><input type="text" name="quantity[]" class="form-control quantity" value="{{ $p->quantity }}" @if($p->receipt_quantity == $p->quantity) readonly="true" @endif>
                                         </td>
-                                        <td><input type="text" name="unit_price[]" class="form-control unit_price" value="{{ $p->unit_price }}" readonly="true"></td>
+                                        <td><input type="text" name="unit_price[]" class="form-control unit_price" value="{{ $p->unit_price }}" @if(in_array($p->number, $pod_number_array_inbound_detail)) readonly="true" @endif></td>
                                         <td><input type="text" name="amount[]" class="form-control amount" readonly="true"></td>
-                                        <td><input type="text" name="import_duty[]" class="form-control import_duty" value="{{ $p->import_duty }}" readonly="true"></td>
+                                        <td><input type="text" name="import_duty[]" class="form-control import_duty" value="{{ $p->import_duty }}" @if(in_array($p->number, $pod_number_array_inbound_detail)) readonly="true" @endif></td>
                                         <td><input type="text" name="freight_handling_cost[]" class="form-control freight_handling_cost" readonly="true" value="{{ $p->freight_handling_cost }}"></td>
+                                        @if(!in_array($p->number, $pod_number_array_inbound_detail)) 
+                                            <td><a href="#" class="removeRow">Remove</a></td>
+                                        @endif
                                     </tr>
                                     @endforeach
 
@@ -148,7 +152,8 @@
                             </table> 
                         </div>
                         <button id="back" class="btn btn-secondary">Back</button>
-                        <button type="submit" id="edit" class="btn btn-primary">Edit</button>
+                        <button id="save" class="btn btn-success">Save</button>
+                        <button id="delete" class="btn btn-danger">Delete</button>
                     </div>
                     </form>
                 </div>
@@ -160,11 +165,6 @@
 @endsection
 @section('script')
 <script type="text/javascript">
-    $('#edit').on('click',function(e){
-        e.preventDefault();
-        const po_number = $('#po_number').val();
-        $(location).attr('href',`../update/${po_number}`);
-    })
     searchMaterial();
     amount();
     totalAmount();
@@ -463,7 +463,6 @@ $('#back').on('click',function(e){
     $('#error').on('click',function(){
             $('#error_box').modal('show')
     });
-
 </script>
 
 

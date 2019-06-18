@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class InboundDetails extends Model
 {
     protected $table = 'inbound_details';
-    protected $fillable = ['material_number','inbound_number','receipt_quantity','batch_number','ordered_quantity'];
+    protected $fillable = ['inbound_number','pod_number','receipt_quantity','batch_number'];
     protected $primaryKey = 'number';
 
     public $timestamps = false;

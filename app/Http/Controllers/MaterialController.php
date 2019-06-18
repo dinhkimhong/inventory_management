@@ -17,20 +17,19 @@ class MaterialController extends Controller
 {
 
 
-    public function materialPage(){
+    public function create(){
     	$units = Unit::all();
     	$material_groups = MaterialGroup::orderBy('material_group_id','ASC')->get();
     	$countries = Country::orderBy('country_code','ASC')->get();
-    	$currencies = Currency::orderBy('currency','ASC')->get();
-    	return view('material.create',compact('units','material_groups','countries','currencies'));
+    	return view('material.create',compact('units','material_groups','countries'));
     }
 
-    public function materialIndex()
+    public function index()
     {
     	return view('material.index');
     }
 
-    public function createMaterial(Request $request)
+    public function new(Request $request)
     {
     	$planning = isset($request->planning) ? 1 : 0;
         $gst = isset($request->gst) ? 1 : 0;
@@ -71,7 +70,6 @@ class MaterialController extends Controller
                             'export_tax'=>$request->export_tax,
                             'tarrif_code'=>$request->tarrif_code,
                             'discount'=>$request->discount,
-                            'inventory_quantity'=>$request->inventory_quantity,
                             'planning'=>$planning,
                             'safety_stock'=>$request->safety_stock,
                             'purchasing_price'=>$request->purchasing_price,
@@ -83,12 +81,12 @@ class MaterialController extends Controller
     	{
             Auth::user()->materials()->save($material);
   		    $material_number = Material::latest('materials.material_number')->value('material_number');
-    		return response()->json(['success'=>'New material '. $material_number. ' was created.']);
+    		return back()->withSuccess('New material '. $material_number. ' was created.');
     	}
-    	return response()->json(['fail'=>$validator->errors()->all()]);
+    	return back()->withInput()->withErrors($validator);
     }
 
-    public function searchMaterial(Request $request)
+    public function search(Request $request)
     {
         $term = $request->term;
         $materials = Material::where('material_description','LIKE','%'.$term.'%')
@@ -101,7 +99,7 @@ class MaterialController extends Controller
         return response()->json($results);
     }
 
-    public function findMaterialInfo(Request $request)
+    public function findInfo(Request $request)
     {
     	$material_number = $request->material_number;
     	$material_info = Material::select('material_description','unit','moving_price')->where('material_number',$material_number)->first();
@@ -109,24 +107,41 @@ class MaterialController extends Controller
 
     }
 
-    public function viewMaterial(Request $request)
+    public function view($material_number)
     {
-    	$material_number = $request->material_number;
     	$material_numbers = DB::table('materials')->pluck('material_number')->all();
 
     	if(!in_array($material_number, $material_numbers)){
-    		return redirect()->route('materialIndex')->withMessage('Material number '.$material_number.' does not exist.');
+    		return redirect()->route('materialIndex')->withError('Material number '.$material_number.' does not exist.');
     	} else{
-    		$material = Material::where('material_number',$material_number)->first();
+            //get inventory quantity        
+            $inventory_quantity = $this->getInventoryQuantity($material_number);            
+
+            $material = Material::find($material_number);
     		$units = Unit::all();
     		$material_groups = MaterialGroup::orderBy('material_group_id','ASC')->get();
-    		$currencies = Currency::orderBy('currency','ASC')->get();
     		$countries = Country::orderBy('country_code','ASC')->get();
-    		return view('material.view',compact('material','units','material_groups','currencies','countries'));
+    		return view('material.view',compact('material','units','material_groups','countries','inventory_quantity'));
     	}
     }
 
-    public function updateMaterial(Request $request)
+
+    public function getInventoryQuantity($material_number){
+        $received_quantity = (int)DB::table('inbound_details')
+                            ->leftJoin('purchase_order_details','inbound_details.pod_number','=','purchase_order_details.number')
+                            ->select(DB::raw('SUM(receipt_quantity) as received_quantity'))
+                            ->where('purchase_order_details.material_number',$material_number)
+                            ->first()->received_quantity;
+        $delivered_quantity = (int)DB::table('outbound_details')
+                            ->leftJoin('sales_order_details','sales_order_details.number','=','outbound_details.sod_number')
+                            ->select(DB::raw('SUM(delivery_quantity) as delivered_quantity'))
+                            ->where('sales_order_details.material_number',$material_number)
+                            ->first()->delivered_quantity;    
+        $inventory_quantity = $received_quantity - $delivered_quantity; 
+        return $inventory_quantity;        
+    }    
+
+    public function update(Request $request)
     {
         $planning = isset($request->planning) ? 1 : 0;
         $gst = isset($request->gst) ? 1 : 0;
@@ -171,7 +186,6 @@ class MaterialController extends Controller
                             'export_tax'=>$request->export_tax,
                             'tarrif_code'=>$request->tarrif_code,
                             'discount'=>$request->discount,
-                            'inventory_quantity'=>$request->inventory_quantity,
                             'planning'=>$planning,
                             'safety_stock'=>$request->safety_stock,
                             'purchasing_price'=>$request->purchasing_price,
@@ -179,12 +193,12 @@ class MaterialController extends Controller
                             'moving_price'=>$request->moving_price,
                             'currency'=>$request->currency,
                         ]);
-    		return response()->json(['success'=>'Material number '. $material_number. ' has been updated.']);
+    		return back()->withSuccess('New material '. $material_number. ' has been updated.');
     	}
-    	return response()->json(['fail'=>$validator->errors()->all()]);
+    	return back()->withErrors($validator);
     }
 
-    public function deleteMaterial(Request $request)
+    public function delete(Request $request)
     {
         	$material_number = $request->material_number;
         	Material::destroy($material_number);

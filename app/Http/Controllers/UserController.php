@@ -56,7 +56,6 @@ class UserController extends Controller
     	// {
     		$update = User::find($id);
 
-
       //       if($request->password !== 'xyz456'){
       //           $update->password = bcrypt($request->password);
       //       } else{
